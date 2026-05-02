@@ -204,6 +204,11 @@
           <div class="fg"><label><span class="lang-ar">رقم الهاتف</span><span class="lang-ku">ژمارەی مۆبایل</span></label><input type="tel" id="rPhone" dir="ltr" placeholder="+964 xxx xxx xxxx"/></div>
           <button class="bp" id="otpBtn" onclick="sendOtp()"><span class="lang-ar">إرسال رمز التحقق</span><span class="lang-ku">ناردنی کۆدی دڵنیاکردنەوە</span></button>
           <div id="otp-section" style="display:none;margin-top:16px">
+            <div id="otpBox" style="background:#EDE9FE;border-radius:10px;padding:14px;text-align:center;margin-bottom:14px">
+              <div style="font-size:12px;color:#6B5FA0;margin-bottom:6px">رمز التحقق الخاص بك:</div>
+              <div id="otpDisplay" style="font-size:36px;font-weight:700;color:#4C1D95;letter-spacing:10px;font-family:monospace">----</div>
+              <div style="font-size:11px;color:#9CA3AF;margin-top:6px">أدخل هذا الرمز في الحقل أدناه</div>
+            </div>
             <div class="fg"><label><span class="lang-ar">رمز التحقق (OTP)</span><span class="lang-ku">کۆدی دڵنیاکردنەوە</span></label><input type="text" id="rOtp" dir="ltr" placeholder="أدخل الرمز" maxlength="6"/></div>
             <div class="fg"><label><span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span></label><input type="password" id="rPass" placeholder="6 أحرف على الأقل"/></div>
             <button class="bp" onclick="doRegister()"><span class="lang-ar">إنشاء الحساب</span><span class="lang-ku">دروستکردنی هەژمار</span></button>
