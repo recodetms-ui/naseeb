@@ -418,9 +418,26 @@ function toast(m,t='info'){
 function goPage(p){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
   document.getElementById('page-'+p).classList.add('on');
-  if(p==='feed') renderFeed();
+  if(p==='feed'){
+    if(window.fbReady){
+      window.fbLoadProfiles().then(profiles => {
+        if(profiles.length) S.profiles = profiles;
+        renderFeed();
+      });
+    } else renderFeed();
+  }
   if(p==='interests') renderInterests();
-  if(p==='admin'){renderAdmMatches();renderUsers();updateStats();}
+  if(p==='admin'){
+    if(window.fbReady){
+      Promise.all([window.fbLoadProfiles(), window.fbLoadMatches()]).then(([profiles, matches]) => {
+        if(profiles.length) S.profiles = profiles;
+        if(matches.length) S.matches = matches;
+        renderAdmMatches();renderUsers();updateStats();
+      });
+    } else {
+      renderAdmMatches();renderUsers();updateStats();
+    }
+  }
 }
 
 /* ═══ AUTH ═══ */
@@ -452,7 +469,9 @@ function doRegister(){
   const code='NSB-'+(1010+S.users.length);
   const newUser={phone:document.getElementById('rPhone').value,pass,role:'user',code};
   S.users.push(newUser);
-  if(window.fbReady) window.fbSaveUser(code, newUser.phone, 'user');
+  if(window.fbReady) {
+    window.fbSaveUser(code, newUser.phone, 'user');
+  }
   authSuccess({token:'tok-'+code,code,role:'user'});
   toast('تم <span class="lang-ar">إنشاء الحساب</span><span class="lang-ku">دروستکردنی هەژمار</span>! 🎉','ok');
   goPage('setup');
@@ -781,6 +800,15 @@ function changeOtp(){
 }
 
 function renderUsers(){
+  // تحميل المستخدمين من Firebase إذا متاح
+  if(window.fbReady && !renderUsers._loaded){
+    renderUsers._loaded=true;
+    getFirestoreUsers().then(fbUsers=>{
+      fbUsers.forEach(u=>{ if(!S.users.find(x=>x.code===u.code)) S.users.push(u); });
+      updateStats();
+      renderUsers();
+    });
+  }
   const q=(document.getElementById('usrQ')?.value||'').toLowerCase();
   const ul=document.getElementById('admUserList');
   if(!ul) return;
@@ -908,6 +936,14 @@ function toggleLang(){
     try {
       await updateDoc(doc(db, 'interests', id), { status });
     } catch(e){ console.error('fbUpdateInterest:', e); }
+  };
+
+  // تحميل كل المستخدمين
+  window.getFirestoreUsers = async () => {
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      return snap.docs.map(d => d.data());
+    } catch(e){ return []; }
   };
 
   console.log('Firebase متصل ✓');
