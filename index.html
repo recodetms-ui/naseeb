@@ -195,7 +195,7 @@
 
         <div id="tab-login" class="on">
           <div class="fg"><label><span class="lang-ar">رقم الهاتف</span><span class="lang-ku">ژمارەی مۆبایل</span></label><input type="tel" id="lPhone" dir="ltr" placeholder="+964 xxx xxx xxxx"/></div>
-          <div class="fg"><label><span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span></label><input type="password" id="lPass" placeholder="<span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span>"/></div>
+          <div class="fg"><label><span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span></label><input type="password" id="lPass" placeholder="كلمة المرور"/></div>
           <button class="bp" onclick="doLogin()"><span class="lang-ar"><span class="lang-ar">تسجيل الدخول</span><span class="lang-ku">چوونەژوورەوە</span></span><span class="lang-ku">چوونەژوورەوە</span></button>
           <div class="hint"><span class="lang-ar"><span class="lang-ar">ليس <span class="lang-ar">لديك حساب؟</span><span class="lang-ku">هەژمارت هەیە؟</span></span><span class="lang-ku">هەژمارت نییە؟</span></span><span class="lang-ku">هەژمارت نییە؟</span> <span class="link" onclick="authTab('register')"><span class="lang-ar">إنشاء حساب</span><span class="lang-ku">دروستکردنی هەژمار</span></span></div>
         </div>
@@ -356,7 +356,7 @@
           </div>
           <div style="background:#fff;border:1px solid var(--bd);border-radius:var(--rad);padding:14px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
             <span style="font-size:13px;font-weight:700;color:var(--r)">🔐 تغيير كلمة مرور المشرف:</span>
-            <input type="password" id="newPassInput" dir="ltr" style="width:140px;padding:7px 10px;border:1.5px solid var(--bd);border-radius:7px;font-size:14px" placeholder="<span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span> الجديدة"/>
+            <input type="password" id="newPassInput" dir="ltr" style="width:140px;padding:7px 10px;border:1.5px solid var(--bd);border-radius:7px;font-size:14px" placeholder="كلمة المرور الجديدة"/>
             <button class="bp" style="width:auto;padding:7px 18px;margin:0" onclick="changeAdminPass()">تغيير</button>
           </div>
           <div class="fg" style="margin-bottom:16px"><input type="text" id="usrQ" placeholder="ابحث بالكود..." oninput="renderUsers()"/></div>
@@ -448,7 +448,7 @@ function doRegister(){
   const otp=document.getElementById('rOtp').value.trim();
   const pass=document.getElementById('rPass').value;
   if(otp!==S.adminOtp) return toast('رمز التحقق غير صحيح','err');
-  if(pass.length<6) return toast('<span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span> 6 أحرف على الأقل','err');
+  if(pass.length<6) return toast('كلمة المرور 6 أحرف على الأقل','err');
   const code='NSB-'+(1010+S.users.length);
   const newUser={phone:document.getElementById('rPhone').value,pass,role:'user',code};
   S.users.push(newUser);
@@ -469,7 +469,7 @@ function doLogin(){
   }
   const ph=document.getElementById('lPhone').value.trim().replace(/[^0-9]/g,'');
   const u=S.users.find(x=>x.phone.replace(/[^0-9]/g,'')===ph&&x.pass===ps);
-  if(!u) return toast('<span class="lang-ar">رقم الهاتف</span><span class="lang-ku">ژمارەی مۆبایل</span> أو <span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span> غير صحيحة','err');
+  if(!u) return toast('رقم الهاتف أو كلمة المرور غير صحيحة','err');
   authSuccess({token:'tok-'+u.code,code:u.code,role:u.role});
   toast('مرحباً بك في نصيب 🌙','ok');
   goPage('feed');
@@ -764,11 +764,11 @@ function updMatch(id,status){
 
 function changeAdminPass(){
   const val=document.getElementById('newPassInput').value.trim();
-  if(val.length<3) return toast('<span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span> قصيرة جداً','err');
+  if(val.length<3) return toast('كلمة المرور قصيرة جداً','err');
   const admin=S.users.find(x=>x.role==='admin');
   if(admin) admin.pass=val;
   SL.set('adminpass',val);
-  toast('تم تغيير <span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span> إلى: '+val+' ✓','ok');
+  toast('تم تغيير كلمة المرور إلى: '+val+' ✓','ok');
   document.getElementById('newPassInput').value='';
 }
 
