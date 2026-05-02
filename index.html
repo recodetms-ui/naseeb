@@ -521,6 +521,43 @@ function doLogin(){
   }
 }
 
+function showForgot(){
+  const box=document.getElementById('forgotBox');
+  box.style.display=box.style.display==='none'?'block':'none';
+}
+
+function doForgot(){
+  const ph=document.getElementById('forgotPhone').value.trim();
+  if(ph.length<10) return toast('أدخل رقم هاتف صحيح','err');
+  const otp=String(Math.floor(1000+Math.random()*9000));
+  S._forgotOtp=otp;
+  S._forgotPhone=ph;
+  document.getElementById('forgotOtpDisplay').textContent=otp;
+  document.getElementById('forgotOtpBox').style.display='block';
+  toast('أدخل الرمز الظاهر على الشاشة','ok');
+}
+
+function doResetPass(){
+  const otp=document.getElementById('forgotOtp').value.trim();
+  const newPass=document.getElementById('forgotNewPass').value;
+  if(otp!==S._forgotOtp) return toast('رمز غير صحيح','err');
+  if(newPass.length<6) return toast('كلمة المرور 6 أحرف على الأقل','err');
+  const ph=S._forgotPhone.replace(/[^0-9]/g,'');
+  // تحديث في الذاكرة
+  const u=S.users.find(x=>x.phone.replace(/[^0-9]/g,'')===ph);
+  if(u) u.pass=newPass;
+  // تحديث في Firebase
+  if(window.fbReady && window.fbUpdatePass){
+    window.fbUpdatePass(ph, newPass).then(()=>{
+      toast('تم تغيير كلمة المرور بنجاح ✓','ok');
+      document.getElementById('forgotBox').style.display='none';
+    });
+  } else {
+    toast('تم تغيير كلمة المرور بنجاح ✓','ok');
+    document.getElementById('forgotBox').style.display='none';
+  }
+}
+
 function adminFill(){
   authTab('login');
   document.getElementById('lPhone').value='+9640000000000';
@@ -997,6 +1034,21 @@ function toggleLang(){
     try {
       await setDoc(doc(db, 'users', user.code), { ...user, createdAt: new Date().toISOString() });
     } catch(e){ console.error('fbSaveUserFull:', e); }
+  };
+
+  // تحديث كلمة المرور
+  window.fbUpdatePass = async (phone, newPass) => {
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      for(const d of snap.docs){
+        const u = d.data();
+        if(u.phone.replace(/[^0-9]/g,'')===phone){
+          await updateDoc(doc(db,'users',d.id),{pass:newPass});
+          return true;
+        }
+      }
+      return false;
+    } catch(e){ console.error('fbUpdatePass:',e); return false; }
   };
 
   console.log('Firebase متصل ✓');
