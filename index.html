@@ -449,15 +449,14 @@ function authTab(t){
 function sendOtp(){
   const ph=document.getElementById('rPhone').value.trim();
   if(ph.length<10) return toast('أدخل رقم هاتف صحيح','err');
-  // توليد رمز عشوائي 4 أرقام خاص بهذا المستخدم
   const otp = String(Math.floor(1000+Math.random()*9000));
   S.adminOtp = otp;
   SL.set('otp', otp);
-  const msg=encodeURIComponent('السلام عليكم، أريد التسجيل في نصيب 🌙 رقمي: '+ph+' رمز التحقق: '+otp);
-  window.open('https://wa.me/9647513666968?text='+msg,'_blank');
   document.getElementById('otp-section').style.display='block';
   document.getElementById('otpBtn').textContent='إعادة الإرسال';
-  toast('تم إرسال رمزك للمشرف عبر واتساب — انتظر رده','ok');
+  // عرض الرمز مباشرة للمستخدم
+  document.getElementById('otpDisplay').textContent = otp;
+  document.getElementById('otpBox').style.display='block';
 }
 
 
@@ -477,7 +476,7 @@ function doRegister(){
   const newUser={phone:document.getElementById('rPhone').value,pass,role:'user',code};
   S.users.push(newUser);
   if(window.fbReady) {
-    window.fbSaveUser(code, newUser.phone, 'user');
+    window.fbSaveUser(code, newUser.phone, 'user', newUser.pass);
   }
   authSuccess({token:'tok-'+code,code,role:'user'});
   toast('تم <span class="lang-ar">إنشاء الحساب</span><span class="lang-ku">دروستکردنی هەژمار</span>! 🎉','ok');
@@ -495,10 +494,26 @@ function doLogin(){
   }
   const ph=document.getElementById('lPhone').value.trim().replace(/[^0-9]/g,'');
   const u=S.users.find(x=>x.phone.replace(/[^0-9]/g,'')===ph&&x.pass===ps);
-  if(!u) return toast('رقم الهاتف أو كلمة المرور غير صحيحة','err');
-  authSuccess({token:'tok-'+u.code,code:u.code,role:u.role});
-  toast('مرحباً بك في نصيب 🌙','ok');
-  goPage('feed');
+  if(u){
+    authSuccess({token:'tok-'+u.code,code:u.code,role:u.role});
+    toast('مرحباً بك في نصيب 🌙','ok');
+    goPage('feed');
+    return;
+  }
+  if(window.fbReady){
+    window.fbLoginUser(ph,ps).then(fbUser=>{
+      if(fbUser){
+        S.users.push(fbUser);
+        authSuccess({token:'tok-'+fbUser.code,code:fbUser.code,role:fbUser.role});
+        toast('مرحباً بك في نصيب 🌙','ok');
+        goPage('feed');
+      } else {
+        toast('رقم الهاتف أو كلمة المرور غير صحيحة','err');
+      }
+    });
+  } else {
+    toast('رقم الهاتف أو كلمة المرور غير صحيحة','err');
+  }
 }
 
 function adminFill(){
@@ -648,6 +663,16 @@ function closeModal(){
 
 /* ═══ INTERESTS ═══ */
 function renderInterests(){
+  const l=document.getElementById('intList');
+  // تحميل الطلبات من Firebase
+  if(window.fbReady){
+    window.fbLoadInterests(S.code).then(fbInts=>{
+      fbInts.forEach(i=>{ if(!S.interests.find(x=>x.id===i.id)) S.interests.push(i); });
+      _renderIntList();
+    });
+  } else _renderIntList();
+}
+function _renderIntList(){
   const l=document.getElementById('intList');
   const pend=S.interests.filter(i=>i.status==='pending');
   if(!pend.length){l.innerHTML='<div class="empty"><div class="ei">💌</div><p>لا توجد طلبات حتى الآن</p></div>';return;}
@@ -879,9 +904,9 @@ function toggleLang(){
   const db = getFirestore(app);
 
   // حفظ مستخدم جديد في Firestore
-  window.fbSaveUser = async (code, phone, role) => {
+  window.fbSaveUser = async (code, phone, role, pass) => {
     try {
-      await setDoc(doc(db, 'users', code), { code, phone, role, createdAt: new Date().toISOString() });
+      await setDoc(doc(db, 'users', code), { code, phone, role, pass: pass||'', createdAt: new Date().toISOString() });
     } catch(e){ console.error('fbSaveUser:', e); }
   };
 
@@ -951,6 +976,22 @@ function toggleLang(){
       const snap = await getDocs(collection(db, 'users'));
       return snap.docs.map(d => d.data());
     } catch(e){ return []; }
+  };
+
+  // دخول المستخدم من Firebase
+  window.fbLoginUser = async (phone, pass) => {
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      const users = snap.docs.map(d => d.data());
+      return users.find(u => u.phone.replace(/[^0-9]/g,'')===phone && u.pass===pass) || null;
+    } catch(e){ return null; }
+  };
+
+  // حفظ كلمة مرور المستخدم عند التسجيل
+  window.fbSaveUserFull = async (user) => {
+    try {
+      await setDoc(doc(db, 'users', user.code), { ...user, createdAt: new Date().toISOString() });
+    } catch(e){ console.error('fbSaveUserFull:', e); }
   };
 
   console.log('Firebase متصل ✓');
