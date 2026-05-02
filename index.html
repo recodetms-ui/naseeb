@@ -1,0 +1,915 @@
+
+<!-- v3.0 -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Noto+Naskh+Arabic:wght@400;500;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --r:#4C1D95;--rm:#6D28D9;--rl:#EDE9FE;
+    --g:#D4AF37;--gd:#A68B1F;
+    --bg:#F4F1FC;--white:#fff;
+    --tx:#1E1035;--tx2:#6B5FA0;
+    --bd:#DDD5F5;--ok:#059669;--err:#DC2626;
+    --rad:12px;--rad2:20px;
+  }
+  body,input,select,textarea,button{font-family:'Tajawal',sans-serif}
+  body.ku,body.ku input,body.ku select,body.ku textarea,body.ku button{font-family:'Noto Naskh Arabic','Tajawal',sans-serif}
+  body.ku .lang-ku{font-family:'Noto Naskh Arabic','Tajawal',sans-serif;font-size:105%}
+  .app{direction:rtl;min-height:600px;background:var(--bg);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+  /* NAV */
+  nav{background:var(--r);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+  .logo{color:var(--g);font-size:1.35rem;font-weight:700;letter-spacing:1px;display:flex;align-items:center;gap:8px}
+  .logo-ring{width:32px;height:32px;border:2px solid var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .nav-r{display:flex;align-items:center;gap:10px}
+  .nav-code{background:rgba(212,175,55,.18);border:1px solid rgba(212,175,55,.4);color:var(--g);padding:3px 12px;border-radius:20px;font-size:13px;font-weight:600}
+  .nav-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;padding:5px 14px;border-radius:8px;cursor:pointer;font-size:13px;transition:.2s}
+  .nav-btn:hover{background:rgba(255,255,255,.22)}
+  /* PAGES */
+  .page{display:none;flex:1;overflow-y:auto}
+  .page.on{display:flex;flex-direction:column}
+  /* AUTH */
+  .auth-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 16px;background:linear-gradient(135deg,#F4F1FC,#EDE9FE)}
+  .auth-card{background:#fff;border-radius:var(--rad2);padding:40px 36px;width:100%;max-width:420px;border:1px solid var(--bd);box-shadow:0 8px 40px rgba(76,29,149,.13)}
+  .auth-logo{text-align:center;margin-bottom:24px}
+  .auth-logo h1{font-size:2.2rem;color:var(--r);font-weight:700}
+  .auth-logo p{color:var(--tx2);font-size:13px;margin-top:4px}
+  .gold-line{height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent);margin:18px 0 24px}
+  .fg{margin-bottom:16px}
+  .fg label{display:block;font-size:13px;color:var(--tx2);margin-bottom:5px;font-weight:500}
+  .fg input,.fg select,.fg textarea{width:100%;padding:10px 14px;border:1.5px solid var(--bd);border-radius:8px;font-size:14px;color:var(--tx);background:var(--bg);outline:none;font-family:'Tajawal',sans-serif;transition:.2s;direction:rtl}
+  .fg input:focus,.fg select:focus{border-color:var(--rm);background:#fff}
+  .fg input[dir=ltr]{direction:ltr;text-align:left}
+  .bp{width:100%;padding:12px;background:var(--r);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;transition:.2s;font-family:'Tajawal',sans-serif;margin-top:4px}
+  .bp:hover{background:var(--rm)}
+  .bp:disabled{background:#9B89CC;cursor:not-allowed}
+  .bo{padding:7px 16px;background:none;color:var(--r);border:1.5px solid var(--r);border-radius:8px;cursor:pointer;font-size:13px;font-family:'Tajawal',sans-serif;transition:.2s}
+  .bo:hover{background:var(--rl)}
+  .link{color:var(--rm);cursor:pointer;font-weight:600}
+  .hint{text-align:center;font-size:13px;color:var(--tx2);margin-top:14px}
+  .demo-box{margin-top:18px;padding:12px;background:var(--rl);border-radius:10px;border-right:3px solid var(--g);font-size:12.5px;color:var(--tx2);line-height:1.85}
+  .demo-box strong{color:var(--r)}
+  /* TABS inside auth */
+  #tab-login,#tab-register{display:none}
+  #tab-login.on,#tab-register.on{display:block}
+  /* FEED */
+  .feed-filters{background:#fff;border-bottom:1px solid var(--bd);padding:12px 18px;display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}
+  .fbadge{padding:6px 14px;border-radius:20px;background:var(--rl);color:var(--r);border:1px solid #C4B5FD;font-size:13px;cursor:pointer;transition:.2s;white-space:nowrap;font-family:'Tajawal',sans-serif}
+  .fbadge.on,.fbadge:hover{background:var(--r);color:#fff;border-color:var(--r)}
+  .feed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;padding:20px}
+  /* CARDS */
+  .pcard{background:#fff;border-radius:var(--rad2);border:1px solid var(--bd);overflow:hidden;box-shadow:0 2px 12px rgba(76,29,149,.07);transition:.2s;cursor:pointer}
+  .pcard:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(76,29,149,.14)}
+  .card-top{height:130px;background:linear-gradient(135deg,var(--r),var(--rm));display:flex;align-items:center;justify-content:center;position:relative}
+  .card-code-big{font-size:1.3rem;color:var(--g);font-weight:700;letter-spacing:1.5px}
+  .card-gbadge{position:absolute;bottom:10px;left:10px;background:rgba(212,175,55,.9);color:var(--r);font-size:10px;font-weight:700;padding:2px 9px;border-radius:10px}
+  .card-body{padding:14px}
+  .card-row1{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .card-c{font-size:13px;font-weight:700;color:var(--r)}
+  .sbadge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+  .s-single{background:#D1FAE5;color:#065F46}
+  .s-divorced{background:#FEF3C7;color:#92400E}
+  .s-widow{background:#F3F4F6;color:#374151}
+  .s-poly{background:#EDE9FE;color:#5B21B6}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+  .ii{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--tx2)}
+  .iicon{width:18px;height:18px;background:var(--rl);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0}
+  .condition{font-size:11px;color:var(--tx2);background:var(--bg);border-radius:6px;padding:7px 9px;border-right:3px solid var(--g);margin-bottom:12px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card-actions{display:flex;gap:7px}
+  .btn-int{flex:1;padding:8px;background:var(--r);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;transition:.2s;font-family:'Tajawal',sans-serif}
+  .btn-int:hover{background:var(--rm)}
+  .btn-int:disabled{background:#C4B5FD;cursor:default}
+  .btn-view{padding:8px 12px;background:none;color:var(--r);border:1.5px solid var(--bd);border-radius:7px;font-size:12px;cursor:pointer;transition:.2s;font-family:'Tajawal',sans-serif}
+  .btn-view:hover{background:var(--rl)}
+  /* INTEREST PANEL */
+  .panel{max-width:680px;margin:0 auto;padding:24px 20px;width:100%}
+  .sec-title{font-size:17px;font-weight:700;color:var(--r);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--bd)}
+  .iitem{background:#fff;border:1px solid var(--bd);border-radius:var(--rad);padding:14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;box-shadow:0 1px 8px rgba(76,29,149,.05)}
+  .iava{width:42px;height:42px;background:var(--r);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--g);font-size:11px;font-weight:700;flex-shrink:0}
+  .iinfo{display:flex;align-items:center;gap:10px}
+  .iacts{display:flex;gap:7px}
+  .bacc{padding:7px 14px;background:var(--ok);color:#fff;border:none;border-radius:7px;font-size:13px;cursor:pointer;font-family:'Tajawal',sans-serif;font-weight:600}
+  .bdec{padding:7px 14px;background:none;color:var(--err);border:1.5px solid var(--err);border-radius:7px;font-size:13px;cursor:pointer;font-family:'Tajawal',sans-serif}
+  /* ADMIN */
+  .admin-wrap{display:grid;grid-template-columns:220px 1fr;flex:1;min-height:0}
+  .sidebar{background:var(--r);padding:20px 0;overflow-y:auto}
+  .slabel{font-size:11px;color:rgba(212,175,55,.55);padding:0 18px 7px;letter-spacing:1px;font-weight:600;text-transform:uppercase}
+  .sitem{display:flex;align-items:center;gap:9px;padding:10px 18px;color:rgba(255,255,255,.7);cursor:pointer;font-size:13.5px;border-right:3px solid transparent;transition:.15s;font-family:'Tajawal',sans-serif}
+  .sitem:hover,.sitem.on{background:rgba(255,255,255,.09);color:#fff;border-right-color:var(--g)}
+  .adm-content{padding:24px;background:var(--bg);overflow-y:auto}
+  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+  .stat{background:#fff;border-radius:var(--rad);padding:16px;border:1px solid var(--bd)}
+  .stat-l{font-size:11px;color:var(--tx2);margin-bottom:6px}
+  .stat-v{font-size:1.8rem;font-weight:700;color:var(--r)}
+  .stat-s{font-size:11px;color:var(--ok);margin-top:3px}
+  /* MATCH CARD */
+  .mcard{background:#fff;border-radius:var(--rad);border:1px solid var(--bd);margin-bottom:14px;overflow:hidden;box-shadow:0 1px 10px rgba(76,29,149,.06)}
+  .mcard-head{background:var(--r);padding:10px 18px;display:flex;justify-content:space-between;align-items:center}
+  .mcard-id{font-size:11px;color:rgba(212,175,55,.8);font-weight:600}
+  .mcard-date{font-size:11px;color:rgba(255,255,255,.5)}
+  .msplit{display:grid;grid-template-columns:1fr 1fr}
+  .muser{padding:16px;border-left:1px solid var(--bd)}
+  .muser:last-child{border-left:none}
+  .mu-code{font-size:11px;color:var(--tx2);margin-bottom:3px}
+  .mu-name{font-size:15px;font-weight:700;color:var(--r);margin-bottom:6px}
+  .mu-det{font-size:12px;color:var(--tx2);line-height:1.9}
+  .wa-btn{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 14px;background:#25D366;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;font-family:'Tajawal',sans-serif;transition:.2s}
+  .wa-btn:hover{background:#1da851}
+  .mcard-foot{padding:12px 18px;background:var(--bg);border-top:1px solid var(--bd);display:flex;gap:8px;align-items:center}
+  .msbadge{padding:3px 11px;border-radius:10px;font-size:11px;font-weight:700}
+  .ms-new{background:#EDE9FE;color:#5B21B6}
+  .ms-done{background:#D1FAE5;color:#065F46}
+  /* PROFILE SETUP WIZARD */
+  .wiz-steps{display:flex;gap:6px;margin-bottom:24px}
+  .wstep{flex:1;height:4px;background:var(--bd);border-radius:2px;transition:.3s}
+  .wstep.active{background:var(--g)}
+  .wstep.done{background:var(--r)}
+  .setup-card{background:#fff;border-radius:var(--rad2);padding:28px;border:1px solid var(--bd);box-shadow:0 4px 20px rgba(76,29,149,.08)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  /* TOAST */
+  #toasts{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:999;pointer-events:none;display:flex;flex-direction:column;gap:7px;align-items:center}
+  .toast{padding:10px 22px;border-radius:10px;font-size:13px;font-weight:600;animation:td .3s ease;pointer-events:none;font-family:'Tajawal',sans-serif;white-space:nowrap}
+  .t-ok{background:#059669;color:#fff}
+  .t-err{background:#DC2626;color:#fff}
+  .t-info{background:var(--r);color:#fff}
+  @keyframes td{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+  /* EMPTY */
+  .empty{text-align:center;padding:50px 20px;color:var(--tx2)}
+  .empty .ei{font-size:40px;opacity:.35;margin-bottom:12px}
+  /* MODAL */
+  .overlay{display:none;position:fixed;inset:0;background:rgba(30,16,53,.55);z-index:500;align-items:center;justify-content:center;padding:16px}
+  .overlay.on{display:flex}
+  .modal{background:#fff;border-radius:var(--rad2);width:100%;max-width:520px;max-height:88vh;overflow-y:auto}
+  .modal-hd{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--bd)}
+  .modal-hd h3{font-size:15px;font-weight:700;color:var(--r)}
+  .mcls{width:30px;height:30px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;color:var(--tx2)}
+  .modal-body{padding:22px}
+  /* PROFILE DETAIL */
+  .pd-top{height:120px;background:linear-gradient(135deg,var(--r),var(--rm));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+  .pd-code{font-size:1.5rem;color:var(--g);font-weight:700;letter-spacing:2px}
+  .pd-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bg);font-size:13.5px}
+  .pd-label{color:var(--tx2)}
+  .pd-val{font-weight:600;color:var(--tx)}
+  /* RESPONSIVE */
+  .lang-ku { display: none; }
+  .lang-ar { display: inline; }
+  body.ku .lang-ku { display: inline; }
+  body.ku .lang-ar { display: none; }
+  @media(max-width:600px){
+    .admin-wrap{grid-template-columns:1fr}
+    .sidebar{display:none}
+    .stats-row{grid-template-columns:repeat(2,1fr)}
+    .msplit{grid-template-columns:1fr}
+    .feed-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding:12px}
+    .auth-card{padding:28px 20px}
+    .adm-content{padding:14px}
+  }
+</style>
+
+<div id="toasts"></div>
+
+<div class="app" id="app">
+
+  <!-- NAV -->
+  <nav id="nav" style="display:none">
+    <div class="logo"><div class="logo-ring">ن</div>نصيب</div>
+    <div class="nav-r">
+      <span class="nav-code" id="navCode">NSB-0000</span>
+      <button class="nav-btn" onclick="goPage('interests')">🔔 <span class="lang-ar">الطلبات</span><span class="lang-ku">داواکاریەکان</span></button>
+      <button class="nav-btn" onclick="toggleLang()" id="langBtn">کوردی</button>
+      <button class="nav-btn" onclick="doLogout()" id="logoutBtn"><span class="lang-ar">خروج</span><span class="lang-ku">دەرچوون</span></button>
+    </div>
+  </nav>
+
+  <!-- ══ AUTH PAGE ══ -->
+  <div class="page on" id="page-auth">
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <div class="auth-logo">
+          <h1 style="color:var(--r)"><span class="lang-ar">نصيب</span><span class="lang-ku">نەسیب</span></h1>
+          <p><span class="lang-ar">منصة التعارف الإسلامي الراقية</span><span class="lang-ku">پلاتفۆرمی ئیسلامی بۆ دیتن</span></p>
+          <p style="font-size:11px;color:#9CA3AF;margin-top:2px"><span class="lang-ar">للعراق والشرق الأوسط</span><span class="lang-ku">بۆ عێراق و ڕۆژهەڵاتی ناوەڕاست</span></p>
+        </div>
+        <div class="gold-line"></div>
+
+        <div id="tab-login" class="on">
+          <div class="fg"><label><span class="lang-ar">رقم الهاتف</span><span class="lang-ku">ژمارەی مۆبایل</span></label><input type="tel" id="lPhone" dir="ltr" placeholder="+964 xxx xxx xxxx"/></div>
+          <div class="fg"><label><span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span></label><input type="password" id="lPass" placeholder="<span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span>"/></div>
+          <button class="bp" onclick="doLogin()"><span class="lang-ar"><span class="lang-ar">تسجيل الدخول</span><span class="lang-ku">چوونەژوورەوە</span></span><span class="lang-ku">چوونەژوورەوە</span></button>
+          <div class="hint"><span class="lang-ar"><span class="lang-ar">ليس <span class="lang-ar">لديك حساب؟</span><span class="lang-ku">هەژمارت هەیە؟</span></span><span class="lang-ku">هەژمارت نییە؟</span></span><span class="lang-ku">هەژمارت نییە؟</span> <span class="link" onclick="authTab('register')"><span class="lang-ar">إنشاء حساب</span><span class="lang-ku">دروستکردنی هەژمار</span></span></div>
+        </div>
+
+        <div id="tab-register">
+          <div class="fg"><label><span class="lang-ar">رقم الهاتف</span><span class="lang-ku">ژمارەی مۆبایل</span></label><input type="tel" id="rPhone" dir="ltr" placeholder="+964 xxx xxx xxxx"/></div>
+          <button class="bp" id="otpBtn" onclick="sendOtp()"><span class="lang-ar">إرسال رمز التحقق</span><span class="lang-ku">ناردنی کۆدی دڵنیاکردنەوە</span></button>
+          <div id="otp-section" style="display:none;margin-top:16px">
+            <div class="fg"><label><span class="lang-ar">رمز التحقق (OTP)</span><span class="lang-ku">کۆدی دڵنیاکردنەوە</span></label><input type="text" id="rOtp" dir="ltr" placeholder="أدخل الرمز" maxlength="6"/></div>
+            <div class="fg"><label><span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span></label><input type="password" id="rPass" placeholder="6 أحرف على الأقل"/></div>
+            <button class="bp" onclick="doRegister()"><span class="lang-ar">إنشاء الحساب</span><span class="lang-ku">دروستکردنی هەژمار</span></button>
+          </div>
+          <div class="hint" style="margin-top:12px"><span class="lang-ar">لديك حساب؟</span><span class="lang-ku">هەژمارت هەیە؟</span> <span class="link" onclick="authTab('login')"><span class="lang-ar"><span class="lang-ar">تسجيل الدخول</span><span class="lang-ku">چوونەژوورەوە</span></span><span class="lang-ku">چوونەژوورەوە</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SETUP PAGE ══ -->
+  <div class="page" id="page-setup">
+    <div style="max-width:560px;margin:32px auto;padding:0 16px;width:100%">
+      <div style="text-align:center;margin-bottom:24px">
+        <h2 style="color:var(--r);font-size:1.3rem"><span class="lang-ar">أكمل ملفك الشخصي</span><span class="lang-ku">پرۆفایلەکەت تەواو بکە</span></h2>
+        <p style="color:var(--tx2);font-size:13px;margin-top:5px"><span class="lang-ar">معلوماتك مشفرة — لن يراها أحد سوى المشرف</span><span class="lang-ku">زانیاریەکانت نهێنین — تەنها چاودێر دەیبینێت</span></p>
+      </div>
+      <div class="wiz-steps">
+        <div class="wstep active" id="ws0"></div>
+        <div class="wstep" id="ws1"></div>
+        <div class="wstep" id="ws2"></div>
+      </div>
+      <div class="setup-card">
+        <div id="st0">
+          <h3 style="color:var(--r);margin-bottom:18px;font-size:15px"><span class="lang-ar">المعلومات الشخصية</span><span class="lang-ku">زانیاری کەسی</span></h3>
+          <div class="fg"><label><span class="lang-ar">الاسم الكامل (سري — للمشرف فقط)</span><span class="lang-ku">ناوی تەواو (نهێنی — تەنها بۆ چاودێر)</span></label><input type="text" id="pName" placeholder="اسمك الكامل"/></div>
+          <div class="row2">
+            <div class="fg"><label><span class="lang-ar">الجنس</span><span class="lang-ku">ڕەگەز</span></label><select id="pGender"><option value="">اختر</option><option value="male">ذكر</option><option value="female">أنثى</option></select></div>
+            <div class="fg"><label><span class="lang-ar">العمر</span><span class="lang-ku">تەمەن</span></label><input type="number" id="pAge" placeholder="<span class="lang-ar">العمر</span><span class="lang-ku">تەمەن</span>" min="18" max="80"/></div>
+          </div>
+          <div class="fg"><label><span class="lang-ar">المحافظة</span><span class="lang-ku">پارێزگا</span></label>
+            <select id="pCity"><option value="">اختر</option>
+              <option>بغداد</option><option>البصرة</option><option>الموصل</option><option>أربيل</option>
+              <option>كركوك</option><option>النجف</option><option>كربلاء</option><option>الحلة</option>
+              <option>الناصرية</option><option>السليمانية</option><option>دهوك</option><option>تكريت</option>
+            </select>
+          </div>
+          <div class="fg"><label><span class="lang-ar">الحالة الاجتماعية</span><span class="lang-ku">باری کۆمەڵایەتی</span></label>
+            <select id="pStatus"><option value="">اختر</option>
+              <option value="single"><span class="lang-ar">أعزب/عزباء</span><span class="lang-ku">تازەکار</span></option><option value="divorced"><span class="lang-ar">مطلق/مطلقة</span><span class="lang-ku">جیابووەوە</span></option>
+              <option value="widow"><span class="lang-ar">أرمل/أرملة</span><span class="lang-ku">بێوەژن/بێمێرد</span></option><option value="poly">يرغب في التعدد</option>
+            </select>
+          </div>
+          <div class="fg"><label><span class="lang-ar">رقم الهاتف</span><span class="lang-ku">ژمارەی مۆبایل</span> (للمشرف فقط — سري)</label><input type="tel" id="pPhone" dir="ltr" placeholder="+964 xxx xxx xxxx"/></div>
+          <button class="bp" onclick="wizNext(1)"><span class="lang-ar">التالي →</span><span class="lang-ku">دواتر →</span></button>
+        </div>
+        <div id="st1" style="display:none">
+          <h3 style="color:var(--r);margin-bottom:18px;font-size:15px"><span class="lang-ar">المعلومات المهنية</span><span class="lang-ku">زانیاری پیشەیی</span></h3>
+          <div class="fg"><label><span class="lang-ar">المهنة</span><span class="lang-ku">پیشە</span></label><input type="text" id="pJob" placeholder="مهندس، طبيب، معلم..."/></div>
+          <div class="fg"><label><span class="lang-ar">التعليم</span><span class="lang-ku">خوێندن</span></label>
+            <select id="pEdu"><option value="">اختر</option>
+              <option value="diploma">دبلوم</option><option value="bachelor">بكالوريوس</option>
+              <option value="master">ماجستير</option><option value="phd">دكتوراه</option>
+            </select>
+          </div>
+          <div class="row2">
+            <div class="fg"><label><span class="lang-ar">الطول (سم)</span><span class="lang-ku">بەرزی (سم)</span></label><input type="number" id="pH" placeholder="170"/></div>
+            <div class="fg"><label><span class="lang-ar">الوزن (كغ)</span><span class="lang-ku">کێشی (کگ)</span></label><input type="number" id="pW" placeholder="70"/></div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="bo" style="flex:1" onclick="wizNext(0)"><span class="lang-ar">← السابق</span><span class="lang-ku">← پێشتر</span></button>
+            <button class="bp" style="flex:2" onclick="wizNext(2)"><span class="lang-ar">التالي →</span><span class="lang-ku">دواتر →</span></button>
+          </div>
+        </div>
+        <div id="st2" style="display:none">
+          <h3 style="color:var(--r);margin-bottom:18px;font-size:15px"><span class="lang-ar">الشروط والتفاصيل</span><span class="lang-ku">مەرج و وردەکاریەکان</span></h3>
+          <div class="fg"><label><span class="lang-ar">نبذة عنك</span><span class="lang-ku">کورتەیەک دەربارەت</span></label><textarea id="pBio" rows="3" style="resize:none" placeholder="اكتب نبذة مختصرة..."></textarea></div>
+          <div class="fg"><label><span class="lang-ar">الشرط الصارم (اختياري)</span><span class="lang-ku">مەرجی بەهێز (ئارەزووی)</span></label><textarea id="pCond" rows="2" style="resize:none" placeholder="مثال: يشترط أن يكون من بغداد..."></textarea></div>
+          <div id="polyBox" style="display:none;background:var(--rl);border-radius:10px;padding:14px;margin-bottom:14px">
+            <p style="font-size:12px;font-weight:700;color:var(--r);margin-bottom:10px">خيارات التعدد</p>
+            <div id="polyM" style="display:none">
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:7px;cursor:pointer"><input type="checkbox" id="pFin"/> قادر مادياً على التعدد</label>
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="pWife"/> زوجتي الأولى على علم</label>
+            </div>
+            <div id="polyF" style="display:none">
+              <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="pAcc"/> أقبل بالزواج كزوجة ثانية</label>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="bo" style="flex:1" onclick="wizNext(1)"><span class="lang-ar">← السابق</span><span class="lang-ku">← پێشتر</span></button>
+            <button class="bp" style="flex:2" onclick="saveProfile()"><span class="lang-ar">حفظ الملف ✓</span><span class="lang-ku">پرۆفایل پاشەکەوت بکە ✓</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FEED PAGE ══ -->
+  <div class="page" id="page-feed">
+    <div class="feed-filters">
+      <span style="font-size:13px;color:var(--tx2);font-weight:600;align-self:center"><span class="lang-ar">تصفية:</span><span class="lang-ku">فلتەر:</span></span>
+      <button class="fbadge on" onclick="fFilter('all',this)"><span class="lang-ar">الكل</span><span class="lang-ku">هەمووی</span></button>
+      <button class="fbadge" onclick="fFilter('single',this)"><span class="lang-ar">أعزب/عزباء</span><span class="lang-ku">تازەکار</span></button>
+      <button class="fbadge" onclick="fFilter('divorced',this)"><span class="lang-ar">مطلق/مطلقة</span><span class="lang-ku">جیابووەوە</span></button>
+      <button class="fbadge" onclick="fFilter('widow',this)"><span class="lang-ar">أرمل/أرملة</span><span class="lang-ku">بێوەژن/بێمێرد</span></button>
+      <button class="fbadge" onclick="fFilter('poly',this)"><span class="lang-ar">تعدد</span><span class="lang-ku">زیادەکردن</span></button>
+    </div>
+    <div class="feed-grid" id="feedGrid"></div>
+  </div>
+
+  <!-- ══ INTERESTS PAGE ══ -->
+  <div class="page" id="page-interests">
+    <div class="panel">
+      <div class="sec-title"><span class="lang-ar">💌 <span class="lang-ar">طلبات الاهتمام</span><span class="lang-ku">داواکاری ئەلاقە</span> الواردة</span><span class="lang-ku">💌 داواکاریە وەرگیراوەکان</span></div>
+      <div id="intList"></div>
+    </div>
+  </div>
+
+  <!-- ══ ADMIN PAGE ══ -->
+  <div class="page" id="page-admin">
+    <div class="admin-wrap">
+      <aside class="sidebar">
+        <div style="padding:18px;margin-bottom:6px">
+          <div style="color:var(--g);font-size:1.1rem;font-weight:700"><span class="lang-ar">لوحة المشرف</span><span class="lang-ku">پەنەلی چاودێر</span></div>
+          <div style="color:rgba(255,255,255,.4);font-size:11px;margin-top:3px"><span class="lang-ar">نصيب — إدارة</span><span class="lang-ku">نەسیب — بەڕێوەبردن</span></div>
+        </div>
+        <div class="slabel"><span class="lang-ar">القائمة</span><span class="lang-ku">لیستەکە</span></div>
+        <div class="sitem on" onclick="admTab('stats',this)"><span class="lang-ar">📊 الإحصائيات</span><span class="lang-ku">📊 ئامارەکان</span></div>
+        <div class="sitem" onclick="admTab('matches',this)"><span class="lang-ar">💞 التطابقات</span><span class="lang-ku">💞 هاوتاییەکان</span></div>
+        <div class="sitem" onclick="admTab('users',this)"><span class="lang-ar">👤 <span class="lang-ar">المستخدمون</span><span class="lang-ku">بەکارهێنەران</span></span><span class="lang-ku">👤 بەکارهێنەران</span></div>
+      </aside>
+      <main class="adm-content">
+        <div id="adm-stats">
+          <div style="font-size:16px;font-weight:700;color:var(--r);margin-bottom:16px"><span class="lang-ar">نظرة عامة</span><span class="lang-ku">ڕووی گشتی</span></div>
+          <div class="stats-row" id="statsRow">
+            <div class="stat"><div class="stat-l"><span class="lang-ar">المستخدمون</span><span class="lang-ku">بەکارهێنەران</span></div><div class="stat-v" id="stUsers">0</div><div class="stat-s" id="stUsersSub">جاري التحديث</div></div>
+            <div class="stat"><div class="stat-l"><span class="lang-ar">ملفات مكتملة</span><span class="lang-ku">پرۆفایلی تەواو</span></div><div class="stat-v" id="stProfiles">0</div><div class="stat-s" id="stProfilesSub">-</div></div>
+            <div class="stat"><div class="stat-l"><span class="lang-ar">طلبات الاهتمام</span><span class="lang-ku">داواکاری ئەلاقە</span></div><div class="stat-v" id="stInterests">0</div><div class="stat-s" id="stInterestsSub">-</div></div>
+            <div class="stat"><div class="stat-l"><span class="lang-ar">تطابقات ناجحة</span><span class="lang-ku">هاوتاییە سەرکەوتووەکان</span></div><div class="stat-v" id="stMatches">0</div><div class="stat-s" style="color:var(--g)" id="stMatchesSub">-</div></div>
+          </div>
+          <div style="font-size:14px;font-weight:700;color:var(--r);margin-bottom:12px"><span class="lang-ar">التطابقات الجديدة</span><span class="lang-ku">هاوتاییە نوێەکان</span></div>
+          <div id="admNewMatches"></div>
+        </div>
+        <div id="adm-matches" style="display:none">
+          <div style="font-size:16px;font-weight:700;color:var(--r);margin-bottom:16px"><span class="lang-ar">إدارة التطابقات</span><span class="lang-ku">بەڕێوەبردنی هاوتاییەکان</span></div>
+          <div style="display:flex;gap:8px;margin-bottom:16px">
+            <button class="fbadge on" onclick="mFilter('new',this)">جديد</button>
+            <button class="fbadge" onclick="mFilter('contacted',this)">تم التواصل</button>
+            <button class="fbadge" onclick="mFilter('closed',this)">مغلق</button>
+          </div>
+          <div id="admMatchList"></div>
+        </div>
+        <div id="adm-users" style="display:none">
+          <div style="font-size:16px;font-weight:700;color:var(--r);margin-bottom:16px"><span class="lang-ar">إدارة المستخدمين</span><span class="lang-ku">بەڕێوەبردنی بەکارهێنەران</span></div>
+          <div style="background:#fff;border:1px solid var(--bd);border-radius:var(--rad);padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span style="font-size:13px;font-weight:700;color:var(--r)">🔑 رمز OTP التسجيل:</span>
+            <input type="text" id="otpInput" maxlength="6" dir="ltr" style="width:90px;padding:7px 10px;border:1.5px solid var(--bd);border-radius:7px;font-size:15px;font-weight:700;text-align:center;font-family:monospace" placeholder="0000"/>
+            <button class="bp" style="width:auto;padding:7px 18px;margin:0" onclick="changeOtp()">حفظ الرمز</button>
+            <span style="font-size:12px;color:var(--tx2)">أرسله للمستخدم عبر واتساب</span>
+          </div>
+          <div style="background:#fff;border:1px solid var(--bd);border-radius:var(--rad);padding:14px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span style="font-size:13px;font-weight:700;color:var(--r)">🔐 تغيير كلمة مرور المشرف:</span>
+            <input type="password" id="newPassInput" dir="ltr" style="width:140px;padding:7px 10px;border:1.5px solid var(--bd);border-radius:7px;font-size:14px" placeholder="<span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span> الجديدة"/>
+            <button class="bp" style="width:auto;padding:7px 18px;margin:0" onclick="changeAdminPass()">تغيير</button>
+          </div>
+          <div class="fg" style="margin-bottom:16px"><input type="text" id="usrQ" placeholder="ابحث بالكود..." oninput="renderUsers()"/></div>
+          <div id="admUserList"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- PROFILE DETAIL MODAL -->
+<div class="overlay" id="profileModal">
+  <div class="modal">
+    <div class="pd-top">
+      <div class="pd-code" id="mdCode">NSB-1001</div>
+      <div style="color:rgba(255,255,255,.7);font-size:12px" id="mdGender">أنثى</div>
+    </div>
+    <div style="padding:20px">
+      <div class="pd-row"><span class="pd-label"><span class="lang-ar">العمر</span><span class="lang-ku">تەمەن</span></span><span class="pd-val" id="mdAge">—</span></div>
+      <div class="pd-row"><span class="pd-label">المدينة</span><span class="pd-val" id="mdCity">—</span></div>
+      <div class="pd-row"><span class="pd-label"><span class="lang-ar">الحالة الاجتماعية</span><span class="lang-ku">باری کۆمەڵایەتی</span></span><span class="pd-val" id="mdStatus">—</span></div>
+      <div class="pd-row"><span class="pd-label"><span class="lang-ar">المهنة</span><span class="lang-ku">پیشە</span></span><span class="pd-val" id="mdJob">—</span></div>
+      <div class="pd-row"><span class="pd-label"><span class="lang-ar">التعليم</span><span class="lang-ku">خوێندن</span></span><span class="pd-val" id="mdEdu">—</span></div>
+      <div id="mdCondBox" style="display:none;margin-top:12px;background:var(--bg);border-radius:8px;padding:12px;border-right:3px solid var(--g);font-size:13px;color:var(--tx2);line-height:1.6"></div>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <button class="bp" id="mdIntBtn" onclick="mdSendInt()" style="flex:1">💌 أبدِ اهتمامك</button>
+        <button class="bo" onclick="closeModal()" style="flex:0 0 auto">إغلاق</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SL = { get:k=>sessionStorage.getItem(k), set:(k,v)=>sessionStorage.setItem(k,v), clr:()=>sessionStorage.clear() };
+let S = {
+  token: SL.get('t'), code: SL.get('c'), role: SL.get('r'),
+  adminOtp: SL.get('otp')||'0000',
+  filter:'all', sent:new Set(), wiz:0, mdCode:null,
+  users:[
+    {phone:'+9647513666968',pass:'333',role:'admin',code:'NSB-ADMIN',name:'مدير'},
+  ],
+  interests:[],
+  matches:[],
+  profiles:[]
+};
+
+const SL2 = {single:'أعزب/عزباء',divorced:'مطلق/مطلقة',widow:'أرمل/أرملة',poly:'تعدد'};
+const SC  = {single:'s-single',divorced:'s-divorced',widow:'s-widow',poly:'s-poly'};
+const GL  = {male:'ذكر',female:'أنثى'};
+const EL  = {diploma:'دبلوم',bachelor:'بكالوريوس',master:'ماجستير',phd:'دكتوراه'};
+
+function toast(m,t='info'){
+  const w=document.getElementById('toasts'),e=document.createElement('div');
+  e.className='toast t-'+t; e.textContent=m; w.appendChild(e);
+  setTimeout(()=>e.remove(),3200);
+}
+
+function goPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
+  document.getElementById('page-'+p).classList.add('on');
+  if(p==='feed') renderFeed();
+  if(p==='interests') renderInterests();
+  if(p==='admin'){renderAdmMatches();renderUsers();updateStats();}
+}
+
+/* ═══ AUTH ═══ */
+function authTab(t){
+  document.getElementById('tab-login').classList.toggle('on', t==='login');
+  document.getElementById('tab-register').classList.toggle('on', t==='register');
+}
+
+function sendOtp(){
+  const ph=document.getElementById('rPhone').value.trim();
+  if(ph.length<10) return toast('أدخل رقم هاتف صحيح','err');
+  // توليد رمز عشوائي 4 أرقام خاص بهذا المستخدم
+  const otp = String(Math.floor(1000+Math.random()*9000));
+  S.adminOtp = otp;
+  SL.set('otp', otp);
+  const msg=encodeURIComponent('السلام عليكم، أريد التسجيل في نصيب 🌙 رقمي: '+ph+' رمز التحقق: '+otp);
+  window.open('https://wa.me/9647513666968?text='+msg,'_blank');
+  document.getElementById('otp-section').style.display='block';
+  document.getElementById('otpBtn').textContent='إعادة الإرسال';
+  toast('تم إرسال رمزك للمشرف عبر واتساب — انتظر رده','ok');
+}
+
+
+function doRegister(){
+  const otp=document.getElementById('rOtp').value.trim();
+  const pass=document.getElementById('rPass').value;
+  if(otp!==S.adminOtp) return toast('رمز التحقق غير صحيح','err');
+  if(pass.length<6) return toast('<span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span> 6 أحرف على الأقل','err');
+  const code='NSB-'+(1010+S.users.length);
+  const newUser={phone:document.getElementById('rPhone').value,pass,role:'user',code};
+  S.users.push(newUser);
+  if(window.fbReady) window.fbSaveUser(code, newUser.phone, 'user');
+  authSuccess({token:'tok-'+code,code,role:'user'});
+  toast('تم <span class="lang-ar">إنشاء الحساب</span><span class="lang-ku">دروستکردنی هەژمار</span>! 🎉','ok');
+  goPage('setup');
+}
+
+function doLogin(){
+  const ps=document.getElementById('lPass').value.trim();
+  const adminPass=SL.get('adminpass')||'333';
+  if(ps===adminPass){
+    authSuccess({token:'tok-admin',code:'NSB-ADMIN',role:'admin'});
+    toast('مرحباً بك 🌙','ok');
+    goPage('admin');renderAdmMatches();renderUsers();updateStats();
+    return;
+  }
+  const ph=document.getElementById('lPhone').value.trim().replace(/[^0-9]/g,'');
+  const u=S.users.find(x=>x.phone.replace(/[^0-9]/g,'')===ph&&x.pass===ps);
+  if(!u) return toast('<span class="lang-ar">رقم الهاتف</span><span class="lang-ku">ژمارەی مۆبایل</span> أو <span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span> غير صحيحة','err');
+  authSuccess({token:'tok-'+u.code,code:u.code,role:u.role});
+  toast('مرحباً بك في نصيب 🌙','ok');
+  goPage('feed');
+}
+
+function adminFill(){
+  authTab('login');
+  document.getElementById('lPhone').value='+9640000000000';
+  document.getElementById('lPass').value='Admin@Naseeb2024!';
+  toast('تم تعبئة بيانات المشرف — اضغط دخول','info');
+}
+
+function authSuccess(d){
+  S.token=d.token; S.code=d.code; S.role=d.role;
+  SL.set('t',d.token); SL.set('c',d.code); SL.set('r',d.role);
+  document.getElementById('nav').style.display='flex';
+  document.getElementById('navCode').textContent=d.code;
+}
+
+function doLogout(){
+  SL.clr(); S.token=null; S.code=null; S.role=null; S.sent=new Set();
+  document.getElementById('nav').style.display='none';
+  goPage('auth'); authTab('login');
+}
+
+/* ═══ WIZARD ═══ */
+function wizNext(n){
+  if(n>S.wiz){
+    if(S.wiz===0){
+      if(!document.getElementById('pName').value.trim()) return toast('أدخل الاسم الكامل','err');
+      if(!document.getElementById('pGender').value) return toast('اختر <span class="lang-ar">الجنس</span><span class="lang-ku">ڕەگەز</span>','err');
+      if(!document.getElementById('pAge').value) return toast('أدخل <span class="lang-ar">العمر</span><span class="lang-ku">تەمەن</span>','err');
+      if(!document.getElementById('pCity').value) return toast('اختر <span class="lang-ar">المحافظة</span><span class="lang-ku">پارێزگا</span>','err');
+      if(!document.getElementById('pStatus').value) return toast('اختر <span class="lang-ar">الحالة الاجتماعية</span><span class="lang-ku">باری کۆمەڵایەتی</span>','err');
+    }
+  }
+  document.getElementById('st'+S.wiz).style.display='none';
+  document.getElementById('ws'+S.wiz).classList.remove('active');
+  document.getElementById('ws'+S.wiz).classList[n>S.wiz?'add':'remove']('done');
+  S.wiz=n;
+  document.getElementById('st'+n).style.display='block';
+  document.getElementById('ws'+n).classList.add('active');
+  if(n===2){
+    const st=document.getElementById('pStatus').value;
+    const gn=document.getElementById('pGender').value;
+    const pb=document.getElementById('polyBox');
+    if(st==='poly'){
+      pb.style.display='block';
+      document.getElementById('polyM').style.display=gn==='male'?'block':'none';
+      document.getElementById('polyF').style.display=gn==='female'?'block':'none';
+    } else pb.style.display='none';
+  }
+}
+
+function saveProfile(){
+  const p={
+    code:S.code,gender:document.getElementById('pGender').value,
+    age:parseInt(document.getElementById('pAge').value),
+    city:document.getElementById('pCity').value,
+    status:document.getElementById('pStatus').value,
+    job:document.getElementById('pJob').value||'غير محدد',
+    edu:EL[document.getElementById('pEdu').value]||'غير محدد',
+    cond:document.getElementById('pCond').value,
+    phone:document.getElementById('pPhone').value||S.users.find(x=>x.code===S.code)?.phone||'—'
+  };
+  S.profiles=S.profiles.filter(x=>x.code!==S.code);
+  S.profiles.unshift(p);
+  if(window.fbReady) window.fbSaveProfile(p);
+  toast('تم حفظ ملفك الشخصي ✓','ok');
+  setTimeout(()=>goPage('feed'),700);
+}
+
+/* ═══ FEED ═══ */
+function fFilter(f,el){
+  S.filter=f;
+  document.querySelectorAll('.feed-filters .fbadge').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  renderFeed();
+}
+
+function renderFeed(){
+  const g=document.getElementById('feedGrid');
+  let ps=S.profiles.filter(p=>p.code!==S.code);
+  if(S.filter!=='all') ps=ps.filter(p=>p.status===S.filter);
+  if(!ps.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="ei">🔍</div><p><span class="lang-ar">لا توجد نتائج</span><span class="lang-ku">هیچ ئەنجامێک نییە</span></p></div>';return;}
+  g.innerHTML=ps.map(p=>{
+    const sent=S.sent.has(p.code);
+    return `<div class="pcard" onclick="openProfile('${p.code}')">
+      <div class="card-top"><div class="card-code-big">${p.code}</div><div class="card-gbadge">${GL[p.gender]||p.gender}</div></div>
+      <div class="card-body">
+        <div class="card-row1"><span class="card-c">${p.code}</span><span class="sbadge ${SC[p.status]||'s-single'}">${SL2[p.status]||p.status}</span></div>
+        <div class="info-grid">
+          <div class="ii"><div class="iicon">🎂</div>${p.age} سنة</div>
+          <div class="ii"><div class="iicon">📍</div>${p.city}</div>
+          <div class="ii"><div class="iicon">💼</div>${p.job||'—'}</div>
+          <div class="ii"><div class="iicon">🎓</div>${p.edu||'—'}</div>
+        </div>
+        ${p.cond?`<div class="condition">"${p.cond}"</div>`:''}
+        <div class="card-actions" onclick="event.stopPropagation()">
+          <button class="btn-int" ${sent?'disabled':''} onclick="sendInt('${p.code}',this)">${sent?'✓ تم الإرسال':'💌 أبدِ اهتمامك'}</button>
+          <button class="btn-view" onclick="openProfile('${p.code}')">عرض</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function sendInt(code,btn){
+  if(S.sent.size>=3) return toast('وصلت حد الإرسال اليومي (3 طلبات)','err');
+  S.sent.add(code);
+  btn.textContent='✓ تم الإرسال'; btn.disabled=true;
+  toast(`تم إرسال اهتمامك إلى ${code} 💌`,'ok');
+}
+
+/* ═══ PROFILE MODAL ═══ */
+function openProfile(code){
+  const p=S.profiles.find(x=>x.code===code);
+  if(!p) return;
+  S.mdCode=code;
+  document.getElementById('mdCode').textContent=code;
+  document.getElementById('mdGender').textContent=GL[p.gender]||p.gender;
+  document.getElementById('mdAge').textContent=p.age+' سنة';
+  document.getElementById('mdCity').textContent=p.city;
+  document.getElementById('mdStatus').textContent=SL2[p.status]||p.status;
+  document.getElementById('mdJob').textContent=p.job||'—';
+  document.getElementById('mdEdu').textContent=p.edu||'—';
+  const cb=document.getElementById('mdCondBox');
+  if(p.cond){cb.style.display='block';cb.textContent='"'+p.cond+'"';}
+  else cb.style.display='none';
+  const sent=S.sent.has(code);
+  const ib=document.getElementById('mdIntBtn');
+  ib.textContent=sent?'✓ تم الإرسال':'💌 أبدِ اهتمامك';
+  ib.disabled=sent;
+  document.getElementById('profileModal').classList.add('on');
+}
+
+function mdSendInt(){
+  if(!S.mdCode) return;
+  if(S.sent.size>=3) return toast('وصلت حد الإرسال اليومي','err');
+  S.sent.add(S.mdCode);
+  document.getElementById('mdIntBtn').textContent='✓ تم الإرسال';
+  document.getElementById('mdIntBtn').disabled=true;
+  toast(`تم إرسال اهتمامك إلى ${S.mdCode} 💌`,'ok');
+  renderFeed();
+}
+
+function closeModal(){
+  document.getElementById('profileModal').classList.remove('on');
+}
+
+/* ═══ INTERESTS ═══ */
+function renderInterests(){
+  const l=document.getElementById('intList');
+  const pend=S.interests.filter(i=>i.status==='pending');
+  if(!pend.length){l.innerHTML='<div class="empty"><div class="ei">💌</div><p>لا توجد طلبات حتى الآن</p></div>';return;}
+  l.innerHTML=pend.map(i=>`
+  <div class="iitem" id="ii-${i.id}">
+    <div class="iinfo">
+      <div class="iava">${i.from.replace('NSB-','')}</div>
+      <div>
+        <div style="font-weight:700;color:var(--r);font-size:14px">${i.from}</div>
+        <div style="font-size:12px;color:var(--tx2)">${i.age} سنة · ${i.city} · ${i.job}</div>
+      </div>
+    </div>
+    <div class="iacts">
+      <button class="bacc" onclick="respInt('${i.id}','accepted')">قبول ✓</button>
+      <button class="bdec" onclick="respInt('${i.id}','declined')">رفض</button>
+    </div>
+  </div>`).join('');
+}
+
+function respInt(id,status){
+  const i=S.interests.find(x=>x.id===id);
+  if(i) i.status=status;
+  const el=document.getElementById('ii-'+id);
+  if(el){el.style.opacity='.4';setTimeout(()=>el.remove(),500);}
+  if(status==='accepted'){
+    const pA=S.profiles.find(x=>x.code===i.from);
+    const pB=S.profiles.find(x=>x.code===S.code);
+    const uA=S.users.find(x=>x.code===i.from);
+    const uB=S.users.find(x=>x.code===S.code);
+    const matchObj={
+      id:'m'+Date.now(),status:'new',
+      date:new Date().toISOString().slice(0,10),
+      cA:i.from,
+      nA:(uA&&uA.name)?uA.name:i.from,
+      phA:pA&&pA.phone?pA.phone:(uA?uA.phone:'—'),
+      ageA:pA?pA.age:i.age,
+      cityA:pA?pA.city:i.city,
+      jobA:pA?pA.job:i.job,
+      gA:pA?pA.gender:'male',
+      cB:S.code,
+      nB:(uB&&uB.name)?uB.name:S.code,
+      phB:pB&&pB.phone?pB.phone:(uB?uB.phone:'—'),
+      ageB:pB?pB.age:'—',
+      cityB:pB?pB.city:'—',
+      jobB:pB?pB.job:'—',
+      gB:pB?pB.gender:'female',
+    };
+    S.matches.unshift(matchObj);
+    if(window.fbReady) window.fbSaveMatch(matchObj);
+    toast('تهانينا! تم القبول 🎉 — سيتواصل معك المشرف قريباً','ok');
+  } else toast('تم الرفض','info');
+}
+
+/* ═══ ADMIN ═══ */
+function updateStats(){
+  const users = S.users.filter(u=>u.role!=='admin').length;
+  const profiles = S.profiles.length;
+  const interests = S.interests.length;
+  const matches = S.matches.filter(m=>m.status==='contacted'||m.status==='closed').length;
+  const newMatches = S.matches.filter(m=>m.status==='new').length;
+  const el_u = document.getElementById('stUsers');
+  const el_p = document.getElementById('stProfiles');
+  const el_i = document.getElementById('stInterests');
+  const el_m = document.getElementById('stMatches');
+  if(el_u) el_u.textContent = users;
+  if(el_p){ el_p.textContent = profiles; document.getElementById('stProfilesSub').textContent = users>0?(Math.round(profiles/Math.max(users,1)*100)+'%'):'-'; }
+  if(el_i){ el_i.textContent = interests; const acc=S.interests.filter(x=>x.status==='accepted').length; document.getElementById('stInterestsSub').textContent = interests>0?('معدل قبول '+Math.round(acc/Math.max(interests,1)*100)+'%'):'-'; }
+  if(el_m){ el_m.textContent = matches; document.getElementById('stMatchesSub').textContent = newMatches>0?('🌟 '+newMatches+' جديد'):'-'; }
+}
+
+function admTab(t,el){
+  ['stats','matches','users'].forEach(x=>{
+    const e=document.getElementById('adm-'+x);
+    if(e) e.style.display=x===t?'block':'none';
+  });
+  document.querySelectorAll('.sitem').forEach(s=>s.classList.remove('on'));
+  el.classList.add('on');
+  if(t==='matches') renderAdmMatches();
+  if(t==='users') renderUsers();
+}
+
+function waLink(ph,name,otherCode){
+  const msg=encodeURIComponent(`السلام عليكم ${name},\nهذا المشرف في منصة نصيب 🌙\nيسعدنا إخبارك بوجود تطابق مع ${otherCode}.\nنرجو التواصل للمتابعة. بارك الله فيكم.`);
+  return `https://wa.me/${ph.replace(/\D/g,'')}?text=${msg}`;
+}
+
+function matchCard(m){
+  const sl={new:'ms-new',contacted:'ms-done',closed:'ms-done'};
+  const st={new:'جديد',contacted:'تم التواصل',closed:'مغلق'};
+  return `<div class="mcard" id="mc-${m.id}">
+    <div class="mcard-head"><span class="mcard-id">تطابق #${m.id.toUpperCase()}</span><span class="mcard-date">${m.date}</span></div>
+    <div class="msplit">
+      <div class="muser">
+        <div class="mu-code">${m.cA} · ${GL[m.gA]}</div>
+        <div class="mu-name">${m.nA}</div>
+        <div class="mu-det">${m.ageA} سنة · ${m.cityA}<br>${m.jobA}<br><span dir="ltr" style="font-size:11px">${m.phA}</span></div>
+        <a class="wa-btn" href="${waLink(m.phA,m.nA,m.cB)}" target="_blank">💬 واتساب</a>
+      </div>
+      <div class="muser">
+        <div class="mu-code">${m.cB} · ${GL[m.gB]}</div>
+        <div class="mu-name">${m.nB}</div>
+        <div class="mu-det">${m.ageB} سنة · ${m.cityB}<br>${m.jobB}<br><span dir="ltr" style="font-size:11px">${m.phB}</span></div>
+        <a class="wa-btn" href="${waLink(m.phB,m.nB,m.cA)}" target="_blank">💬 واتساب</a>
+      </div>
+    </div>
+    <div class="mcard-foot">
+      <span class="msbadge ${sl[m.status]||'ms-new'}">${st[m.status]||m.status}</span>
+      <button class="bo" style="font-size:12px;padding:5px 12px" onclick="updMatch('${m.id}','contacted')">تم التواصل</button>
+      <button class="bo" style="font-size:12px;padding:5px 12px;color:var(--tx2)" onclick="updMatch('${m.id}','closed')">إغلاق</button>
+    </div>
+  </div>`;
+}
+
+let admFilter='new';
+function mFilter(f,el){
+  admFilter=f;
+  document.querySelectorAll('#adm-matches .fbadge').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  renderAdmMatches();
+}
+
+function renderAdmMatches(){
+  const nw=S.matches.filter(m=>m.status==='new');
+  const el=document.getElementById('admNewMatches');
+  if(el) el.innerHTML=nw.length?nw.map(matchCard).join(''):'<div class="empty"><p><span class="lang-ar"><span class="lang-ar">لا توجد تطابقات</span><span class="lang-ku">هیچ هاوتاییەک نییە</span> جديدة</span><span class="lang-ku">هیچ هاوتاییەکی نوێ نییە</span></p></div>';
+  const ml=document.getElementById('admMatchList');
+  if(ml){
+    const filt=S.matches.filter(m=>m.status===admFilter);
+    ml.innerHTML=filt.length?filt.map(matchCard).join(''):'<div class="empty"><p><span class="lang-ar">لا توجد تطابقات</span><span class="lang-ku">هیچ هاوتاییەک نییە</span></p></div>';
+  }
+}
+
+function updMatch(id,status){
+  const m=S.matches.find(x=>x.id===id);
+  if(m) m.status=status;
+  if(window.fbReady) window.fbUpdateMatch(id, status);
+  toast('تم تحديث حالة التطابق ✓','ok');
+  renderAdmMatches();
+}
+
+function changeAdminPass(){
+  const val=document.getElementById('newPassInput').value.trim();
+  if(val.length<3) return toast('<span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span> قصيرة جداً','err');
+  const admin=S.users.find(x=>x.role==='admin');
+  if(admin) admin.pass=val;
+  SL.set('adminpass',val);
+  toast('تم تغيير <span class="lang-ar">كلمة المرور</span><span class="lang-ku">وشەی نهێنی</span> إلى: '+val+' ✓','ok');
+  document.getElementById('newPassInput').value='';
+}
+
+function changeOtp(){
+  const val=document.getElementById('otpInput').value.trim();
+  if(val.length<4) return toast('الرمز يجب أن يكون 4 أرقام على الأقل','err');
+  S.adminOtp=val;
+  SL.set('otp',val);
+  toast('تم تغيير رمز OTP إلى: '+val+' ✓','ok');
+}
+
+function renderUsers(){
+  const q=(document.getElementById('usrQ')?.value||'').toLowerCase();
+  const ul=document.getElementById('admUserList');
+  if(!ul) return;
+  const list=S.users.filter(u=>u.role!=='admin'&&(u.code.toLowerCase().includes(q)||u.phone.includes(q)));
+  if(!list.length){ul.innerHTML='<div class="empty"><p><span class="lang-ar">لا توجد نتائج</span><span class="lang-ku">هیچ ئەنجامێک نییە</span></p></div>';return;}
+  ul.innerHTML=list.map(u=>`
+  <div style="background:#fff;border:1px solid var(--bd);border-radius:var(--rad);padding:14px;margin-bottom:9px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 6px rgba(76,29,149,.05)">
+    <div>
+      <div style="font-weight:700;color:var(--r);font-size:14px">${u.code}</div>
+      <div style="font-size:12px;color:var(--tx2);direction:ltr;text-align:right">${u.phone}</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span style="font-size:11px;padding:3px 10px;border-radius:10px;background:#D1FAE5;color:#065F46;font-weight:600">نشط</span>
+      <button class="bo" style="font-size:12px;padding:4px 11px;color:var(--err);border-color:var(--err)" onclick="toast('تم حظر المستخدم ${u.code}','info')">حظر</button>
+    </div>
+  </div>`).join('');
+}
+
+/* ═══ LANG ═══ */
+function toggleLang(){
+  const isKu=document.body.classList.toggle('ku');
+  document.getElementById('langBtn').textContent=isKu?'عربي':'کوردی';
+  document.body.dir=isKu?'rtl':'rtl';
+  SL.set('lang',isKu?'ku':'ar');
+}
+(function(){
+  if(SL.get('lang')==='ku'){
+    document.body.classList.add('ku');
+    const b=document.getElementById('langBtn');
+    if(b) b.textContent='عربي';
+  }
+})();
+
+/* ═══ INIT ═══ */
+(function(){
+  if(S.token){
+    document.getElementById('nav').style.display='flex';
+    document.getElementById('navCode').textContent=S.code;
+    if(S.role==='admin'){goPage('admin');}
+    else goPage('feed');
+  }
+})();
+</script>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, doc, setDoc, getDoc, getDocs, addDoc, updateDoc, onSnapshot, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  import { getAuth, signInWithPhoneNumber, RecaptchaVerifier, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDtWps8UdKyL8C6nuLRJRuVqOPQdcw040k",
+    authDomain: "naseeb-48751.firebaseapp.com",
+    projectId: "naseeb-48751",
+    storageBucket: "naseeb-48751.firebasestorage.app",
+    messagingSenderId: "414885141704",
+    appId: "1:414885141704:web:fe6e0ec46e2e33aebd19fd"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // حفظ مستخدم جديد في Firestore
+  window.fbSaveUser = async (code, phone, role) => {
+    try {
+      await setDoc(doc(db, 'users', code), { code, phone, role, createdAt: new Date().toISOString() });
+    } catch(e){ console.error('fbSaveUser:', e); }
+  };
+
+  // حفظ الملف الشخصي
+  window.fbSaveProfile = async (profile) => {
+    try {
+      await setDoc(doc(db, 'profiles', profile.code), { ...profile, updatedAt: new Date().toISOString() });
+    } catch(e){ console.error('fbSaveProfile:', e); }
+  };
+
+  // حفظ طلب اهتمام
+  window.fbSaveInterest = async (interest) => {
+    try {
+      await addDoc(collection(db, 'interests'), { ...interest, createdAt: new Date().toISOString() });
+    } catch(e){ console.error('fbSaveInterest:', e); }
+  };
+
+  // حفظ تطابق جديد
+  window.fbSaveMatch = async (match) => {
+    try {
+      await setDoc(doc(db, 'matches', match.id), { ...match, createdAt: new Date().toISOString() });
+    } catch(e){ console.error('fbSaveMatch:', e); }
+  };
+
+  // تحديث حالة تطابق
+  window.fbUpdateMatch = async (id, status) => {
+    try {
+      await updateDoc(doc(db, 'matches', id), { status });
+    } catch(e){ console.error('fbUpdateMatch:', e); }
+  };
+
+  // تحميل كل الملفات الشخصية
+  window.fbLoadProfiles = async () => {
+    try {
+      const snap = await getDocs(collection(db, 'profiles'));
+      return snap.docs.map(d => d.data());
+    } catch(e){ console.error('fbLoadProfiles:', e); return []; }
+  };
+
+  // تحميل التطابقات
+  window.fbLoadMatches = async () => {
+    try {
+      const snap = await getDocs(collection(db, 'matches'));
+      return snap.docs.map(d => d.data());
+    } catch(e){ console.error('fbLoadMatches:', e); return []; }
+  };
+
+  // تحميل <span class="lang-ar">الطلبات</span><span class="lang-ku">داواکاریەکان</span> الواردة لمستخدم معين
+  window.fbLoadInterests = async (code) => {
+    try {
+      const q = query(collection(db, 'interests'), where('to','==',code), where('status','==','pending'));
+      const snap = await getDocs(q);
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch(e){ console.error('fbLoadInterests:', e); return []; }
+  };
+
+  // تحديث حالة طلب
+  window.fbUpdateInterest = async (id, status) => {
+    try {
+      await updateDoc(doc(db, 'interests', id), { status });
+    } catch(e){ console.error('fbUpdateInterest:', e); }
+  };
+
+  console.log('Firebase متصل ✓');
+  window.fbReady = true;
+</script>
