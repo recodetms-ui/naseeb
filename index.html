@@ -664,6 +664,10 @@ function sendInt(code,btn){
   if(S.sent.size>=3) return toast('وصلت حد الإرسال اليومي (3 طلبات)','err');
   S.sent.add(code);
   btn.textContent='✓ تم الإرسال'; btn.disabled=true;
+  const myP=S.profiles.find(x=>x.code===S.code)||{};
+  const intObj={id:'i'+Date.now(),from:S.code,to:code,status:'pending',age:myP.age||'',city:myP.city||'',job:myP.job||''};
+  S.interests.push(intObj);
+  if(window.fbReady) window.fbSaveInterest(intObj);
   toast(`تم إرسال اهتمامك إلى ${code} 💌`,'ok');
 }
 
@@ -695,6 +699,10 @@ function mdSendInt(){
   S.sent.add(S.mdCode);
   document.getElementById('mdIntBtn').textContent='✓ تم الإرسال';
   document.getElementById('mdIntBtn').disabled=true;
+  const myP=S.profiles.find(x=>x.code===S.code)||{};
+  const intObj={id:'i'+Date.now(),from:S.code,to:S.mdCode,status:'pending',age:myP.age||'',city:myP.city||'',job:myP.job||''};
+  S.interests.push(intObj);
+  if(window.fbReady) window.fbSaveInterest(intObj);
   toast(`تم إرسال اهتمامك إلى ${S.mdCode} 💌`,'ok');
   renderFeed();
 }
@@ -962,7 +970,7 @@ function toggleLang(){
   // حفظ طلب اهتمام
   window.fbSaveInterest = async (interest) => {
     try {
-      await addDoc(collection(db, 'interests'), { ...interest, createdAt: new Date().toISOString() });
+      await setDoc(doc(db, 'interests', interest.id), { ...interest, createdAt: new Date().toISOString() });
     } catch(e){ console.error('fbSaveInterest:', e); }
   };
 
@@ -999,9 +1007,9 @@ function toggleLang(){
   // تحميل <span class="lang-ar">الطلبات</span><span class="lang-ku">داواکاریەکان</span> الواردة لمستخدم معين
   window.fbLoadInterests = async (code) => {
     try {
-      const q = query(collection(db, 'interests'), where('to','==',code), where('status','==','pending'));
+      const q = query(collection(db, 'interests'), where('to','==',code));
       const snap = await getDocs(q);
-      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      return snap.docs.map(d => ({ ...d.data(), id: d.data().id||d.id }));
     } catch(e){ console.error('fbLoadInterests:', e); return []; }
   };
 
