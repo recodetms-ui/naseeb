@@ -176,7 +176,7 @@
     <div class="logo"><div class="logo-ring">ن</div>نصيب</div>
     <div class="nav-r">
       <span class="nav-code" id="navCode">NSB-0000</span>
-      <button class="nav-btn" onclick="goPage('interests')">🔔 <span class="lang-ar">الطلبات</span><span class="lang-ku">داواکاریەکان</span></button>
+      <button class="nav-btn" onclick="goPage('interests');clearBell()">🔔 <span class="lang-ar">الطلبات</span><span class="lang-ku">داواکاریەکان</span><span id="intBell" style="display:none;background:#DC2626;color:#fff;border-radius:50%;width:16px;height:16px;font-size:10px;text-align:center;line-height:16px;margin-right:4px">!</span></button>
       <button class="nav-btn" onclick="toggleLang()" id="langBtn">کوردی</button>
       <button class="nav-btn" onclick="doLogout()" id="logoutBtn"><span class="lang-ar">خروج</span><span class="lang-ku">دەرچوون</span></button>
     </div>
@@ -570,6 +570,12 @@ function authSuccess(d){
   SL.set('t',d.token); SL.set('c',d.code); SL.set('r',d.role);
   document.getElementById('nav').style.display='flex';
   document.getElementById('navCode').textContent=d.code;
+  // تشغيل الـ realtime
+  if(window.fbReady && window.fbStartRealtime) {
+    window.fbStartRealtime(d.code, d.role);
+  } else {
+    setTimeout(()=>{ if(window.fbStartRealtime) window.fbStartRealtime(d.code, d.role); }, 2000);
+  }
 }
 
 function doLogout(){
@@ -712,6 +718,11 @@ function closeModal(){
 }
 
 /* ═══ INTERESTS ═══ */
+function clearBell(){
+  const bell=document.getElementById('intBell');
+  if(bell) bell.style.display='none';
+}
+
 function renderInterests(){
   const l=document.getElementById('intList');
   // تحميل الطلبات من Firebase
@@ -1057,6 +1068,77 @@ function toggleLang(){
       }
       return false;
     } catch(e){ console.error('fbUpdatePass:',e); return false; }
+  };
+
+  // نظام Realtime - يحدث البيانات تلقائياً
+  window.fbStartRealtime = (userCode, role) => {
+    // مراقبة طلبات الاهتمام الواردة (للمستخدم العادي)
+    if(role !== 'admin' && userCode) {
+      const intQ = query(collection(db, 'interests'), where('to','==', userCode));
+      onSnapshot(intQ, (snap) => {
+        snap.docChanges().forEach(change => {
+          const data = { ...change.doc.data(), id: change.doc.data().id || change.doc.id };
+          if(change.type === 'added') {
+            if(!S.interests.find(x=>x.id===data.id)) {
+              S.interests.push(data);
+              // إشعار بالطلب الجديد
+              if(data.status === 'pending') {
+                const bell = document.getElementById('intBell');
+                if(bell) bell.style.display = 'inline';
+                toast('لديك طلب اهتمام جديد! 💌', 'ok');
+              }
+            }
+          }
+          if(change.type === 'modified') {
+            const idx = S.interests.findIndex(x=>x.id===data.id);
+            if(idx>=0) S.interests[idx] = data;
+          }
+        });
+        if(document.getElementById('page-interests')?.classList.contains('on')) {
+          _renderIntList();
+        }
+      });
+    }
+
+    // مراقبة المستخدمين والتطابقات (للمشرف)
+    if(role === 'admin') {
+      onSnapshot(collection(db, 'users'), (snap) => {
+        snap.docChanges().forEach(change => {
+          const data = change.doc.data();
+          if(change.type === 'added') {
+            if(!S.users.find(x=>x.code===data.code)) S.users.push(data);
+          }
+        });
+        updateStats();
+        if(document.getElementById('page-admin')?.classList.contains('on')) renderUsers();
+      });
+
+      onSnapshot(collection(db, 'matches'), (snap) => {
+        snap.docChanges().forEach(change => {
+          const data = change.doc.data();
+          if(change.type === 'added') {
+            if(!S.matches.find(x=>x.id===data.id)) S.matches.unshift(data);
+          }
+          if(change.type === 'modified') {
+            const idx = S.matches.findIndex(x=>x.id===data.id);
+            if(idx>=0) S.matches[idx] = data;
+          }
+        });
+        updateStats();
+        if(document.getElementById('page-admin')?.classList.contains('on')) renderAdmMatches();
+      });
+
+      // مراقبة الملفات الشخصية للمشرف
+      onSnapshot(collection(db, 'profiles'), (snap) => {
+        snap.docChanges().forEach(change => {
+          const data = change.doc.data();
+          if(change.type === 'added') {
+            if(!S.profiles.find(x=>x.code===data.code)) S.profiles.push(data);
+          }
+        });
+        updateStats();
+      });
+    }
   };
 
   console.log('Firebase متصل ✓');
